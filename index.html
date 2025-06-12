@@ -433,7 +433,56 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+        .message.info {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
 
+        /* اطمینان از مخفی بودن تمام صفحات در ابتدا */
+        #loginPage, #mainContainer, #logoutContainer, #successPage {
+            transition: opacity 0.3s ease;
+        }
+        /* ثابت کردن دکمه خروج */
+        #logoutContainer {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: unset !important;
+            margin: 0 !important;
+            z-index: 9999 !important;
+            backdrop-filter: blur(10px) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 0 0 8px 8px !important;
+            padding: 8px 12px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            border-top: none !important;
+            margin-bottom: -50px !important;
+            width: auto !important;
+            display: inline-block !important;
+        }
+
+        #logoutContainer button {
+            backdrop-filter: blur(10px) !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+            font-size: 0.8rem !important;
+            padding: 6px 12px !important;
+        }
+
+        /* تنظیمات ریسپانسیو برای دکمه خروج */
+        @media (max-width: 768px) {
+            #logoutContainer {
+                /* right: 10px !important; */
+                padding: 6px 8px !important;
+                margin-bottom: -45px !important;
+            }
+            
+            #logoutContainer button {
+                padding: 5px 10px !important;
+                font-size: 0.75rem !important;
+            }
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -441,7 +490,41 @@
     </style>
 </head>
 <body>
-    <div class="container">
+
+    <div id="loginPage" class="container">
+        <div class="header">
+            <h1>🔐 ورود به سیستم</h1>
+            <p>گزارش روزانه نیروگاه خورشیدی</p>
+        </div>
+        
+        <div style="padding: 60px 40px;">
+            <form id="loginForm" style="max-width: 400px; margin: 0 auto;">
+                <div class="form-group">
+                    <label for="username">نام کاربری:</label>
+                    <input type="text" id="username" name="username" required 
+                        style="text-align: center; font-weight: bold;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">رمز عبور:</label>
+                    <input type="text" id="password" name="password" required 
+                        style="text-align: center; font-weight: bold;">
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" id="loginBtn">
+                        ورود به سیستم
+                    </button>
+                </div>
+            </form>
+            
+            <div class="message" id="loginMessage" style="margin: 20px 0;"></div>
+        </div>
+    </div>
+
+
+
+    <div class="container" id="mainContainer" style="display: none;">
         <div class="header">
             <h1>گزارش روزانه نیروگاه خورشیدی</h1>
             <p>گزارش عملکرد روزانه سرپرست کارگاه</p>
@@ -465,10 +548,16 @@
                 <h2>مرحله ۱: اطلاعات کلی کارگاه</h2>
                 
                 <div class="form-row">
+
                     <div class="form-group">
                         <label for="supervisorName">نام شما:</label>
-                        <input type="text" id="supervisorName" name="supervisorName" required>
+                        <select id="supervisorName" name="supervisorName" required>
+                            <option value="">انتخاب کنید</option>
+                            <option value="رضا شهمرادی">رضا شهمرادی</option>
+                            <option value="علی چقری مفرد">علی چقری مفرد</option>
+                        </select>
                     </div>
+
                     <div class="form-group">
                         <label for="siteName">نام کارگاه:</label>
                         <select id="siteName" name="siteName" required>
@@ -630,7 +719,7 @@
                     <div class="personnel-item">
                         <label>اپراتور دستگاه حفار</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="drill_operator_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="drill_operator_count" placeholder="تعداد نفرات" min="0" >
                             <input type="number" name="drill_operator_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -638,7 +727,7 @@
                     <div class="personnel-item">
                         <label>نصاب پایه</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="base_installer_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="base_installer_count" placeholder="تعداد نفرات" min="0" >
                             <input type="number" name="base_installer_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -646,7 +735,7 @@
                     <div class="personnel-item">
                         <label>نصاب سازه</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="structure_installer_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="structure_installer_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="structure_installer_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -654,7 +743,7 @@
                     <div class="personnel-item">
                         <label>راننده کامیون</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="truck_driver_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="truck_driver_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="truck_driver_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -662,7 +751,7 @@
                     <div class="personnel-item">
                         <label>راننده بیل مکانیکی</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="excavator_driver_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="excavator_driver_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="excavator_driver_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -670,7 +759,7 @@
                     <div class="personnel-item">
                         <label>راننده جرثقیل</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="crane_driver_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="crane_driver_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="crane_driver_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -678,7 +767,7 @@
                     <div class="personnel-item">
                         <label>راننده غلطک</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="roller_driver_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="roller_driver_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="roller_driver_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -686,7 +775,7 @@
                     <div class="personnel-item">
                         <label>راننده گریدر</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="grader_driver_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="grader_driver_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="grader_driver_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -694,7 +783,7 @@
                     <div class="personnel-item">
                         <label>راننده لودر</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="loader_driver_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="loader_driver_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="loader_driver_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -702,7 +791,7 @@
                     <div class="personnel-item">
                         <label>راننده میکسر</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="mixer_driver_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="mixer_driver_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="mixer_driver_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -710,7 +799,7 @@
                     <div class="personnel-item">
                         <label>راننده تانکر</label>
                         <div class="personnel-inputs">
-                            <input type="number" name="tanker_driver_count" placeholder="تعداد نفرات" min="0" value="0">
+                            <input type="number" name="tanker_driver_count" placeholder="تعداد نفرات" min="0">
                             <input type="number" name="tanker_driver_hours" placeholder="ساعت کاری هر نفر" min="0">
                         </div>
                     </div>
@@ -1126,6 +1215,11 @@
 
         <div class="message" id="message"></div>
     </div>
+    <div id="logoutContainer" >
+        <button onclick="logout()" class="btn btn-secondary" >
+            خروج
+        </button>
+    </div>
     
     <div id="successPage" style="display: none;">
         <div class="container">
@@ -1156,6 +1250,199 @@
     </div>
 
     <script>
+        // متغیرهای لاگین
+        let currentUser = null;
+        const LOGIN_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyMASE23XVAOYM5awfnG-T19rBtQcK0kZxmuiqaDizNlxzWCzip8JTCHQBt4ybr1gY/exec'; // آیدی اسکریپت لاگین
+
+        // تابع لاگین
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (!username || !password) {
+                showLoginMessage('لطفاً نام کاربری و رمز عبور را وارد کنید.', 'error');
+                return;
+            }
+            
+            // غیرفعال کردن دکمه و نمایش حالت لودینگ
+            loginBtn.disabled = true;
+            loginBtn.classList.add('loading');
+            showLoginMessage('در حال بررسی اطلاعات...', 'info');
+            
+            try {
+                // ارسال درخواست به Google Apps Script
+                const response = await fetch(LOGIN_SHEET_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // لاگین موفق
+                    currentUser = result.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    showLoginMessage('ورود موفقیت‌آمیز! در حال انتقال...', 'success');
+                    
+                    setTimeout(() => {
+                        showMainPage();
+                    }, 1500);
+                    
+                } else {
+                    // لاگین ناموفق
+                    showLoginMessage(result.message || 'نام کاربری یا رمز عبور اشتباه است.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginMessage('خطا در اتصال به سرور. لطفاً دوباره تلاش کنید.', 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('loading');
+            }
+        }
+
+        // نمایش پیام لاگین
+        function showLoginMessage(text, type) {
+            const messageDiv = document.getElementById('loginMessage');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                if (type === 'error') {
+                    messageDiv.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        // نمایش صفحه اصلی بعد از لاگین
+        function showMainPage() {
+            // مخفی کردن صفحه لاگین
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('successPage').style.display = 'none';
+            
+            // نمایش صفحه اصلی
+            document.getElementById('mainContainer').style.display = 'block';
+            document.getElementById('logoutContainer').style.display = 'block';
+            
+            // تنظیم نام کاربر در فرم
+            if (currentUser && currentUser.name) {
+                const supervisorSelect = document.getElementById('supervisorName');
+                supervisorSelect.value = currentUser.name;
+                supervisorSelect.disabled = true;
+            }
+            
+            // بازنشانی به مرحله اول
+            currentStep = 1;
+            showStep(1);
+        }
+
+        // خروج از سیستم
+        function logout() {
+            if (confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
+                // پاک کردن اطلاعات کاربر
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                
+                // بازنشانی فرم‌ها
+                document.getElementById('dailyReportForm').reset();
+                document.getElementById('loginForm').reset();
+                
+                // بازنشانی مراحل
+                currentStep = 1;
+                
+                // پاک کردن تمام sub-inputs
+                document.querySelectorAll('.sub-inputs').forEach(sub => {
+                    sub.classList.remove('active');
+                    sub.querySelectorAll('input').forEach(input => {
+                        input.required = false;
+                        input.value = '';
+                    });
+                });
+                
+                // بازنشانی select supervisor
+                const supervisorSelect = document.getElementById('supervisorName');
+                supervisorSelect.disabled = false;
+                supervisorSelect.value = '';
+                
+                // مخفی کردن تمام صفحات
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('logoutContainer').style.display = 'none';
+                document.getElementById('successPage').style.display = 'none';
+                
+                // نمایش صفحه لاگین
+                document.getElementById('loginPage').style.display = 'block';
+                
+                // بازنشانی نمایش مراحل
+                showStep(1);
+                
+                // پیام خروج
+                setTimeout(() => {
+                    showLoginMessage('با موفقیت خارج شدید.', 'success');
+                }, 300);
+            }
+        }
+
+        // بهبود تابع بررسی لاگین قبلی 
+        function checkPreviousLogin() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showMainPage();
+                } catch (error) {
+                    console.error('Error parsing saved user:', error);
+                    localStorage.removeItem('currentUser');
+                    // در صورت خطا، نمایش صفحه لاگین
+                    document.getElementById('loginPage').style.display = 'block';
+                    document.getElementById('mainContainer').style.display = 'none';
+                    document.getElementById('logoutContainer').style.display = 'none';
+                    document.getElementById('successPage').style.display = 'none';
+                }
+            } else {
+                // اگر کاربری ذخیره نشده، نمایش صفحه لاگین
+                document.getElementById('loginPage').style.display = 'block';
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('logoutContainer').style.display = 'none';
+                document.getElementById('successPage').style.display = 'none';
+            }
+        }
+
+        // تنظیم event listener برای فرم لاگین
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            checkPreviousLogin();
+            
+            // کلید Enter برای لاگین
+            document.getElementById('loginPage').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+
+        // بهبود امنیت - پاک کردن رمز عبور از حافظه
+        document.getElementById('password').addEventListener('blur', function() {
+            setTimeout(() => {
+                if (currentUser) {
+                    this.value = '';
+                }
+            }, 1000);
+        });
+        // End of login page
         let currentStep = 1;
         const totalSteps = 6;
 
@@ -1292,12 +1579,29 @@
                 data[checkbox.name] = true;
             });
             
+            // اطمینان از ذخیره نام سرپرست
+            const supervisorSelect = document.getElementById('supervisorName');
+            if (supervisorSelect && supervisorSelect.value) {
+                data['supervisorName'] = supervisorSelect.value;
+            }
+            
+            // اضافه کردن تمام select values به صورت دستی
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                if (select.name && select.value) {
+                    data[select.name] = select.value;
+                }
+            });
+            
+            console.log('Form data being sent:', data); // برای دیباگ
             return data;
-        }
+            }
 
         function showSuccessPage() {
-            // مخفی کردن فرم اصلی
-            document.querySelector('.container').style.display = 'none';
+            // مخفی کردن تمام صفحات
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('logoutContainer').style.display = 'none';
             
             // نمایش صفحه موفقیت
             document.getElementById('successPage').style.display = 'block';
@@ -1318,31 +1622,56 @@
         }
 
         function startNewReport() {
-            // بازنشانی فرم
-            document.getElementById('dailyReportForm').reset();
-            currentStep = 1;
-            
             // مخفی کردن صفحه موفقیت
             document.getElementById('successPage').style.display = 'none';
             
-            // نمایش فرم اصلی
-            document.querySelector('.container').style.display = 'block';
+            // بازنشانی فرم اصلی (اما نه اطلاعات کاربر)
+            document.getElementById('dailyReportForm').reset();
             
-            showStep(1);
+            // بازنشانی مراحل
+            currentStep = 1;
             
             // پاک کردن تمام sub-inputs
             document.querySelectorAll('.sub-inputs').forEach(sub => {
                 sub.classList.remove('active');
+                sub.querySelectorAll('input').forEach(input => {
+                    input.required = false;
+                    input.value = '';
+                });
             });
             
             // پاک کردن تمام reason fields
             document.querySelectorAll('input[name$="_reason"]').forEach(field => {
                 field.style.display = 'none';
                 field.required = false;
+                field.value = '';
             });
+            
+            // نمایش صفحه اصلی
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            document.getElementById('logoutContainer').style.display = 'block';
+            
+            // تنظیم مجدد نام کاربر در فرم
+            if (currentUser && currentUser.name) {
+                const supervisorSelect = document.getElementById('supervisorName');
+                supervisorSelect.value = currentUser.name;
+                supervisorSelect.disabled = true;
+            }
+            
+            // بازنشانی نمایش مراحل
+            showStep(1);
+            
+            // تنظیم تاریخ جدید
+            setDefaultDate();
             
             // فعال کردن دوباره دکمه برگشت
             window.onpopstate = null;
+            
+            // پیام تایید
+            setTimeout(() => {
+                showMessage('آماده برای ثبت گزارش جدید! 📋', 'success');
+            }, 500);
         }
 
         async function submitForm() {
