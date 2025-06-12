@@ -1676,12 +1676,128 @@
             }, 500);
         }
 
-        async function submitForm() {
-            // اعتبارسنجی نهایی
-            if (!validateCurrentStep()) {
-                return;
-            }
+        // اضافه کردن این تابع جدید قبل از submitForm
+        function showConfirmationPopup() {
+            // جمع‌آوری اطلاعات برای نمایش
+            const reportDate = document.getElementById('reportDate').value || 'تاریخ وارد نشده';
+            const siteName = document.getElementById('siteName').value || 'نام ساختگاه انتخاب نشده';
+            
+            // ایجاد popup
+            const popup = document.createElement('div');
+            popup.id = 'confirmationPopup';
+            popup.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                    backdrop-filter: blur(5px);
+                ">
+                    <div style="
+                        background: white;
+                        border-radius: 12px;
+                        padding: 32px;
+                        max-width: 450px;
+                        width: 90%;
+                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                        text-align: center;
+                        font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+                    ">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">📋</div>
+                        <h3 style="color: #1e293b; margin-bottom: 24px; font-size: 1.25rem;">تایید نهایی ارسال گزارش</h3>
+                        
+                        <div style="
+                            background: #f8fafc;
+                            border: 1px solid #e2e8f0;
+                            border-radius: 8px;
+                            padding: 20px;
+                            margin-bottom: 24px;
+                            text-align: right;
+                        ">
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: #374151;">📅 تاریخ گزارش:</strong>
+                                <span style="color: #1e293b; margin-right: 8px;">${reportDate}</span>
+                            </div>
+                            <div>
+                                <strong style="color: #374151;">🏗️ نام ساختگاه:</strong>
+                                <span style="color: #1e293b; margin-right: 8px;">${siteName}</span>
+                            </div>
+                        </div>
+                        
+                        <p style="color: #6b7280; margin-bottom: 24px; font-size: 0.875rem;">
+                            آیا مطمئن هستید که می‌خواهید این گزارش را ارسال کنید؟
+                        </p>
+                        
+                        <div style="display: flex; gap: 12px; justify-content: center;">
+                            <button id="confirmSubmit" style="
+                                background: #475569;
+                                color: white;
+                                border: none;
+                                border-radius: 8px;
+                                padding: 12px 24px;
+                                font-size: 0.875rem;
+                                cursor: pointer;
+                                font-weight: 500;
+                                transition: background-color 0.2s ease;
+                            ">
+                                ✅ تایید و ارسال
+                            </button>
+                            <button id="cancelSubmit" style="
+                                background: #6b7280;
+                                color: white;
+                                border: none;
+                                border-radius: 8px;
+                                padding: 12px 24px;
+                                font-size: 0.875rem;
+                                cursor: pointer;
+                                font-weight: 500;
+                                transition: background-color 0.2s ease;
+                            ">
+                                ❌ انصراف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // اضافه کردن event listeners
+            document.getElementById('confirmSubmit').addEventListener('click', function() {
+                document.body.removeChild(popup);
+                submitFormConfirmed(); // تابع جدید برای ارسال واقعی
+            });
+            
+            document.getElementById('cancelSubmit').addEventListener('click', function() {
+                document.body.removeChild(popup);
+            });
+            
+            // بستن popup با کلیک روی background
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) {
+                    document.body.removeChild(popup);
+                }
+            });
+            
+            // بستن popup با کلید Escape
+            document.addEventListener('keydown', function escapeHandler(e) {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('confirmationPopup')) {
+                        document.body.removeChild(popup);
+                    }
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            });
+        }
 
+        // تغییر نام تابع submitForm به submitFormConfirmed
+        async function submitFormConfirmed() {
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.classList.add('loading');
@@ -1717,6 +1833,17 @@
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('loading');
             }
+        }
+
+        // تابع submitForm جدید که popup را نمایش می‌دهد
+        function submitForm() {
+            // اعتبارسنجی نهایی
+            if (!validateCurrentStep()) {
+                return;
+            }
+            
+            // نمایش popup تایید
+            showConfirmationPopup();
         }
 
         // تابع کلی برای تبدیل اعداد فارسی به انگلیسی
