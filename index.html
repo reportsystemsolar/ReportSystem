@@ -1345,8 +1345,7 @@
             window.onpopstate = null;
         }
 
-        async function submitForm() {
-            // اعتبارسنجی نهایی
+       async function submitForm() {
             if (!validateCurrentStep()) {
                 return;
             }
@@ -1358,30 +1357,34 @@
             try {
                 const formData = collectFormData();
                 
-                // نمایش پیام آماده سازی داده ها
                 showMessage('در حال آماده‌سازی و ارسال اطلاعات...', 'info');
                 
-                // آدرس Google Apps Script - آدرس خود را اینجا قرار دهید
                 const scriptUrl = 'https://script.google.com/macros/s/AKfycbzcb8tsqUui-8rHDUhXq2r1I0mHhQdwdOrhfvbAb1oQvasTO9WZ2ZUkW_32HvgdCfvY/exec';
                 
-                // استفاده از fetch به جای XMLHttpRequest برای رفع مشکل CORS
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'text/plain;charset=utf-8',
+                        'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData),
-                    mode: 'no-cors' // حل مشکل CORS
+                    body: JSON.stringify(formData)
+                    // حذف mode: 'no-cors'
                 });
 
-                showSuccessPage();
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showSuccessPage();
+                } else {
+                    showMessage('خطا در ارسال: ' + result.message, 'error');
+                }
 
             } catch (error) {
                 console.error('Error:', error);
-                
-                // حتی در صورت خطا، ممکن است داده ها ارسال شده باشند
-                // زیرا ما از no-cors استفاده می‌کنیم
-                showMessage('گزارش احتمالاً ارسال شده است. در صورت عدم اطمینان، لطفاً Google Sheet خود را بررسی کنید.', 'info');
+                showMessage('خطا در ارسال گزارش. لطفاً دوباره تلاش کنید.', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('loading');
