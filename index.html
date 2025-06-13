@@ -483,6 +483,33 @@
                 font-size: 0.75rem !important;
             }
         }
+        .description-field {
+            margin-top: 12px;
+            display: none;
+        }
+
+        .description-field.active {
+            display: block;
+        }
+
+        .description-field textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color 0.3s ease;
+            background: #fafafa;
+        }
+
+        .description-field textarea:focus {
+            outline: none;
+            border-color: #475569;
+            box-shadow: 0 0 0 3px rgba(71, 85, 105, 0.1);
+            background: white;
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -998,6 +1025,9 @@
                             <input type="number" name="site_prep_road_total" placeholder="حجم کل" min="0">
                             <input type="number" name="site_prep_road_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="site_prep_road_desc">
+                            <textarea name="site_prep_road_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>استقرار ماشین‌آلات، تجهیزات و اسکان نیروها</label>
@@ -1008,6 +1038,9 @@
                             <input type="number" name="site_prep_equipment_total" placeholder="حجم کل" min="0">
                             <input type="number" name="site_prep_equipment_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="site_prep_equipment_desc">
+                            <textarea name="site_prep_equipment_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>نقشه‌برداری جهت توپوگرافی، تسطیح زمین، مجوز و نصب پایه‌ها</label>
@@ -1017,6 +1050,9 @@
                             <input type="text" name="site_prep_survey_unit" placeholder="واحد">
                             <input type="number" name="site_prep_survey_total" placeholder="حجم کل" min="0">
                             <input type="number" name="site_prep_survey_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="site_prep_survey_desc">
+                            <textarea name="site_prep_survey_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -1033,6 +1069,9 @@
                             <input type="number" name="fence_excavation_total" placeholder="حجم کل" min="0">
                             <input type="number" name="fence_excavation_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="fence_excavation_desc">
+                            <textarea name="fence_excavation_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>نصب پایه و راد</label>
@@ -1042,6 +1081,9 @@
                             <input type="text" name="fence_installation_unit" placeholder="واحد">
                             <input type="number" name="fence_installation_total" placeholder="حجم کل" min="0">
                             <input type="number" name="fence_installation_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="fence_installation_desc">
+                            <textarea name="fence_installation_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
                         
                         <div class="checkbox-item">
@@ -1053,6 +1095,9 @@
                             <input type="number" name="fence_concrete_total" placeholder="حجم کل" min="0">
                             <input type="number" name="fence_concrete_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="fence_concrete_desc">
+                            <textarea name="fence_concrete_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>نصب توری، سیم خاردار و راد</label>
@@ -1062,6 +1107,9 @@
                             <input type="text" name="fence_mesh_unit" placeholder="واحد">
                             <input type="number" name="fence_mesh_total" placeholder="حجم کل" min="0">
                             <input type="number" name="fence_mesh_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="fence_mesh_desc">
+                            <textarea name="fence_mesh_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
                         
                         <div class="checkbox-item">
@@ -1073,6 +1121,9 @@
                             <input type="number" name="fence_gate_total" placeholder="حجم کل" min="0">
                             <input type="number" name="fence_gate_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="fence_gate_desc">
+                            <textarea name="fence_gate_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>احداث فونداسیون گان‌باکس، اینورتر و STS</label>
@@ -1083,6 +1134,9 @@
                             <input type="number" name="fence_foundation_total" placeholder="حجم کل" min="0">
                             <input type="number" name="fence_foundation_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="fence_foundation_desc">
+                            <textarea name="fence_foundation_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>نقشه‌برداری</label>
@@ -1092,6 +1146,9 @@
                             <input type="text" name="fence_survey_unit" placeholder="واحد">
                             <input type="number" name="fence_survey_total" placeholder="حجم کل" min="0">
                             <input type="number" name="fence_survey_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="fence_survey_desc">
+                            <textarea name="fence_survey_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -1108,6 +1165,9 @@
                             <input type="number" name="civil_excavation_total" placeholder="حجم کل" min="0">
                             <input type="number" name="civil_excavation_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="civil_excavation_desc">
+                            <textarea name="civil_excavation_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>نصب پایه با فیکسر</label>
@@ -1117,6 +1177,9 @@
                             <input type="text" name="civil_foundation_unit" placeholder="واحد">
                             <input type="number" name="civil_foundation_total" placeholder="حجم کل" min="0">
                             <input type="number" name="civil_foundation_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="civil_foundation_desc">
+                            <textarea name="civil_foundation_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
                         
                         <div class="checkbox-item">
@@ -1128,6 +1191,9 @@
                             <input type="number" name="civil_concrete_total" placeholder="حجم کل" min="0">
                             <input type="number" name="civil_concrete_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="civil_concrete_desc">
+                            <textarea name="civil_concrete_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>نصب ریل، تیر و بال‌پلیت</label>
@@ -1138,6 +1204,9 @@
                             <input type="number" name="civil_rail_total" placeholder="حجم کل" min="0">
                             <input type="number" name="civil_rail_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="civil_rail_desc">
+                            <textarea name="civil_rail_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>بریلینگ</label>
@@ -1147,6 +1216,9 @@
                             <input type="text" name="civil_drilling_unit" placeholder="واحد">
                             <input type="number" name="civil_drilling_total" placeholder="حجم کل" min="0">
                             <input type="number" name="civil_drilling_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="civil_drilling_desc">
+                            <textarea name="civil_drilling_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -1163,6 +1235,9 @@
                             <input type="number" name="electrical_panel_total" placeholder="حجم کل" min="0">
                             <input type="number" name="electrical_panel_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="electrical_panel_desc">
+                            <textarea name="electrical_panel_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>کابل‌کشی DC</label>
@@ -1172,6 +1247,9 @@
                             <input type="text" name="electrical_dc_cable_unit" placeholder="واحد">
                             <input type="number" name="electrical_dc_cable_total" placeholder="حجم کل" min="0">
                             <input type="number" name="electrical_dc_cable_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="electrical_dc_cable_desc">
+                            <textarea name="electrical_dc_cable_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
                         
                         <div class="checkbox-item">
@@ -1183,6 +1261,9 @@
                             <input type="number" name="electrical_conduit_total" placeholder="حجم کل" min="0">
                             <input type="number" name="electrical_conduit_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="electrical_conduit_desc">
+                            <textarea name="electrical_conduit_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                         
                         <div class="checkbox-item">
                             <label>نصب اینورتر</label>
@@ -1193,8 +1274,12 @@
                             <input type="number" name="electrical_inverter_total" placeholder="حجم کل" min="0">
                             <input type="number" name="electrical_inverter_today" placeholder="حجم امروز" min="0">
                         </div>
+                        <div class="description-field" id="electrical_inverter_desc">
+                            <textarea name="electrical_inverter_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                     </div>
                 </div>
+                
                 <div class="card">
                     <h3>🔹 فعالیت متفرقه</h3>
                     <div class="form-group">
@@ -1203,6 +1288,19 @@
                             id="miscellaneous_activities" 
                             name="miscellaneous_activities" 
                             rows="6" 
+                            style="resize: vertical; min-height: 120px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🔹 مشکلات و موانع</h3>
+                    <div class="form-group">
+                        <label for="problems_obstacles">مشکلات و موانع پیش‌آمده:</label>
+                        <textarea 
+                            id="problems_obstacles" 
+                            name="problems_obstacles" 
+                            rows="6" 
+                            placeholder="مشکلات، موانع و علل آن‌ها را شرح دهید..."
                             style="resize: vertical; min-height: 120px;"></textarea>
                     </div>
                 </div>
@@ -1530,6 +1628,8 @@
 
         function toggleSubInputs(checkbox, targetId) {
             const subInputs = document.getElementById(targetId);
+            const descriptionField = document.getElementById(targetId.replace('_inputs', '_desc'));
+            
             if (subInputs) {
                 if (checkbox.checked) {
                     subInputs.classList.add('active');
@@ -1537,6 +1637,11 @@
                     subInputs.querySelectorAll('input').forEach(input => {
                         input.required = true;
                     });
+                    
+                    // نمایش فیلد توضیحات
+                    if (descriptionField) {
+                        descriptionField.classList.add('active');
+                    }
                 } else {
                     subInputs.classList.remove('active');
                     // حذف اجباری بودن و پاک کردن مقادیر
@@ -1544,10 +1649,18 @@
                         input.required = false;
                         input.value = '';
                     });
+                    
+                    // مخفی کردن و پاک کردن فیلد توضیحات
+                    if (descriptionField) {
+                        descriptionField.classList.remove('active');
+                        const textarea = descriptionField.querySelector('textarea');
+                        if (textarea) {
+                            textarea.value = '';
+                        }
+                    }
                 }
             }
         }
-
         function showMessage(text, type) {
             const messageDiv = document.getElementById('message');
             messageDiv.textContent = text;
