@@ -1352,7 +1352,7 @@
     <script>
         // متغیرهای لاگین
         let currentUser = null;
-        const LOGIN_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyMASE23XVAOYM5awfnG-T19rBtQcK0kZxmuiqaDizNlxzWCzip8JTCHQBt4ybr1gY/exec'; // آیدی اسکریپت لاگین
+        const LOGIN_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxa5tHhy-MvIb1IwHmvFuKrn-RG4mfzUzjJQpAICbzZ9_3Ds_MckG8a0uDtonlG7eSJ/exec'; // آیدی اسکریپت لاگین
 
         // تابع لاگین
         async function handleLogin(event) {
@@ -1721,13 +1721,49 @@
             // نمایش صفحه موفقیت
             document.getElementById('successPage').style.display = 'block';
             
+            // جمع‌آوری اطلاعات از فرم
+            const siteName = document.getElementById('siteName').value || 'نامشخص';
+            const reportDate = document.getElementById('reportDate').value || 'نامشخص';
+            const supervisorName = document.getElementById('supervisorName').value || 'نامشخص';
+            const siteStatus = document.querySelector('input[name="siteStatus"]:checked')?.value || 'نامشخص';
+            const weatherStatus = document.getElementById('weatherStatus').value || 'نامشخص';
+            
             // تنظیم اطلاعات
             const now = new Date();
             const reportId = 'RPT-' + now.getTime().toString().slice(-8);
-            const submitTime = now.toLocaleDateString('fa-IR') + ' ' + now.toLocaleTimeString('fa-IR');
+            const submitTime = now.toLocaleDateString('fa-IR-u-nu-latn', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }) + ' ' + now.toLocaleTimeString('fa-IR');
             
-            document.getElementById('reportId').textContent = reportId;
-            document.getElementById('submitTime').textContent = submitTime;
+            // تنظیم شماره ثبت و زمان ارسال (اگر عناصر موجود باشند)
+            const reportIdElement = document.getElementById('reportId');
+            const submitTimeElement = document.getElementById('submitTime');
+            
+            if (reportIdElement) {
+                reportIdElement.textContent = reportId;
+            }
+            
+            if (submitTimeElement) {
+                submitTimeElement.textContent = submitTime;
+            }
+            
+            // به‌روزرسانی محتوای صفحه موفقیت با اطلاعات جدید
+            const infoBox = document.querySelector('#successPage .container div[style*="background: #f0f9ff"]');
+            if (infoBox) {
+                infoBox.innerHTML = `
+                    <p style="color: #0369a1; margin: 0; line-height: 1.8;">
+                        📋 شماره ثبت: <strong>${reportId}</strong><br>
+                        📅 تاریخ ارسال: <strong>${submitTime}</strong><br>
+                        🏗️ نام ساختگاه: <strong>${siteName}</strong><br>
+                        📆 تاریخ گزارش: <strong>${reportDate}</strong><br>
+                        👤 سرپرست: <strong>${supervisorName}</strong><br>
+                        🔄 وضعیت ساختگاه: <strong>${siteStatus}</strong><br>
+                        🌤️ وضعیت جوی: <strong>${weatherStatus}</strong>
+                    </p>
+                `;
+            }
             
             // غیرفعال کردن دکمه برگشت مرورگر
             history.pushState(null, null, location.href);
@@ -1735,6 +1771,7 @@
                 history.go(1);
             };
         }
+
 
         function startNewReport() {
             // مخفی کردن صفحه موفقیت
@@ -1909,7 +1946,7 @@
             });
         }
 
-        // تغییر نام تابع submitForm به submitFormConfirmed
+        //  تابع submitFormConfirmed
         async function submitFormConfirmed() {
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
@@ -1917,31 +1954,43 @@
 
             try {
                 const formData = collectFormData();
-                
+                console.log(formData)
                 // نمایش پیام آماده سازی داده ها
                 showMessage('در حال آماده‌سازی و ارسال اطلاعات...', 'info');
                 
-                // آدرس Google Apps Script - آدرس خود را اینجا قرار دهید
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbzcb8tsqUui-8rHDUhXq2r1I0mHhQdwdOrhfvbAb1oQvasTO9WZ2ZUkW_32HvgdCfvY/exec';
+                // آدرس Google Apps Script اول (اسکریپت اصلی)
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbwPANLE4fPhIHJstXBehwR8Rd3B2trbcLflh2An59ce_oYOybrf2TtgU_bH7hSbQ2saQw/exec';
                 
-                // استفاده از fetch به جای XMLHttpRequest برای رفع مشکل CORS
+                // ارسال به اسکریپت اول (منتظر پاسخ می‌مانیم)
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'text/plain;charset=utf-8',
                     },
-                    body: JSON.stringify(formData),
-                    // mode: 'no-cors' // حل مشکل CORS
+                    body: JSON.stringify(formData)
                 });
-
+                console.log(response)
+                // نمایش صفحه موفقیت
                 showSuccessPage();
+                
+                // فراخوانی آسنکرون اسکریپت دوم در پس‌زمینه
+                const secondScriptUrl = 'https://script.google.com/macros/s/AKfycbzexq1tJKswfA6qgF_A6ABvKPGsIvbINNxe_rxGkud3fbpypcZ2PdIG4wbXF6Jw6-hy/exec';
+                fetch(secondScriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify(formData)
+                }).then(response => {
+                    console.log('Second script called successfully');
+                }).catch(error => {
+                    console.error('Error calling second script:', error);
+                });
 
             } catch (error) {
                 console.error('Error:', error);
-                
                 // حتی در صورت خطا، ممکن است داده ها ارسال شده باشند
-                // زیرا ما از no-cors استفاده می‌کنیم
-                showMessage('گزارش احتمالاً ارسال شده است. در صورت عدم اطمینان، لطفاً Google Sheet خود را بررسی کنید.', 'info');
+                showMessage('ارسال اطلاعات با مشکل مواجه شد! لطفا دورباره تلاش کنید و به تیم گزارش دهید.', 'info');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('loading');
@@ -1970,10 +2019,21 @@
 
         // تنظیم تاریخ پیش‌فرض
         function setDefaultDate() {
-            const today = new Date();
-            const persianDate = today.toLocaleDateString('fa-IR');
-            document.getElementById('reportDate').value = persianToEnglishDigits(persianDate);
-        }
+        const today = new Date();
+        
+        // تبدیل به تاریخ شمسی با فرمت مناسب
+        const persianDate = today.toLocaleDateString('fa-IR-u-nu-latn', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+        
+        // تبدیل اعداد فارسی به انگلیسی (در صورت نیاز)
+        const englishDate = persianToEnglishDigits(persianDate);
+        
+        document.getElementById('reportDate').value = englishDate;
+    }
+
 
         // اجرای تنظیمات اولیه
         document.addEventListener('DOMContentLoaded', function() {
