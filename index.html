@@ -514,6 +514,79 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        #imagePreview {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .img-container {
+            position: relative;
+        }
+
+        .img-container .delete-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(220, 38, 38, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+            line-height: 24px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        .img-container .delete-btn:hover {
+            background: rgba(220, 38, 38, 1);
+        }
+
+        /* ریسپانسیو برای موبایل */
+        @media (max-width: 768px) {
+            #imagePreview {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 8px;
+            }
+            
+            .img-container {
+                height: 120px !important;
+            }
+            
+            .img-container img {
+                height: 120px !important;
+            }
+        }
+        .submission-progress {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .submission-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .submission-status {
+            text-align: center;
+            color: #374151;
+            font-size: 0.875rem;
+            margin: 12px 0;
+            min-height: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -567,6 +640,7 @@
             <div class="step">4</div>
             <div class="step">5</div>
             <div class="step">6</div>
+            <div class="step">7</div>
         </div>
 
         <form id="dailyReportForm">
@@ -1139,6 +1213,18 @@
                         <div class="description-field" id="site_prep_survey_desc">
                             <textarea name="site_prep_survey_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
+                        <div class="checkbox-item">
+                            <label>آماده‌سازی جایگاه استقرار کانکس و تانکر و درب ورودی ساختگاه</label>
+                            <input type="checkbox" name="site_prep_container" onchange="toggleSubInputs(this, 'site_prep_container_inputs')">
+                        </div>
+                        <div class="sub-inputs" id="site_prep_container_inputs">
+                            <input type="text" name="site_prep_container_unit" placeholder="واحد">
+                            <input type="number" name="site_prep_container_total" placeholder="حجم کل" min="0">
+                            <input type="number" name="site_prep_container_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="site_prep_container_desc">
+                            <textarea name="site_prep_container_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
                     </div>
                 </div>
 
@@ -1390,6 +1476,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- مرحله 7: آپلود تصاویر -->
+            <div class="form-step">
+                <h2>مرحله ۷: آپلود تصاویر</h2>
+                
+               <div class="card">
+                    <h3>🖼️ بارگذاری تصاویر سایت</h3>
+                    <div class="form-group">
+                        <label for="siteImages">انتخاب تصاویر (حداکثر ۵ تصویر):</label>
+                        <input type="file" id="siteImages" name="siteImages" accept="image/*" multiple>
+                        <small style="color: #6b7280; font-size: 0.75rem; margin-top: 4px; display: block;">
+                            💡 توجه: تصاویر بزرگتر از ۵ مگابایت لطفاً در ایتا ارسال کنید
+                        </small>
+                        <div id="imagePreview" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;"></div>
+                    </div>
+                </div>
+            </div>
         </form>
 
         <div class="navigation">
@@ -1435,6 +1538,7 @@
     </div>
 
     <script>
+        let imageFilesList = [];
         // متغیرهای لاگین
         let currentUser = null;
         const LOGIN_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxa5tHhy-MvIb1IwHmvFuKrn-RG4mfzUzjJQpAICbzZ9_3Ds_MckG8a0uDtonlG7eSJ/exec'; // آیدی اسکریپت لاگین
@@ -1629,7 +1733,7 @@
         });
         // End of login page
         let currentStep = 1;
-        const totalSteps = 6;
+        const totalSteps = 7;
 
         // تنظیم اولیه
         document.getElementById('prevBtn').style.display = 'none';
@@ -1746,6 +1850,7 @@
                 }
             }
         }
+
         function showMessage(text, type) {
             const messageDiv = document.getElementById('message');
             messageDiv.textContent = text;
@@ -1758,7 +1863,54 @@
             }, 10000);
         }
 
-        function collectFormData() {
+        // تابع فشرده‌سازی تصویر
+        function compressImage(file, quality = 0.7, maxWidth = 1200) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = function() {
+                    // محاسبه ابعاد جدید
+                    let { width, height } = img;
+                    
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // رسم تصویر فشرده شده
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // تبدیل به blob با کیفیت کمتر
+                    canvas.toBlob(resolve, 'image/jpeg', quality);
+                };
+                
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        // Add this helper function to convert file to base64
+        async function fileToBase64(file) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    // فشرده‌سازی قبل از تبدیل به base64
+                    const compressedFile = await compressImage(file, 0.7, 1200);
+                    
+                    const reader = new FileReader();
+                    reader.readAsDataURL(compressedFile);
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = error => reject(error);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        async function collectFormData() {
             const formData = new FormData(document.getElementById('dailyReportForm'));
             const data = {};
             
@@ -1793,9 +1945,25 @@
                 }
             });
             
+            // Handle multiple images
+            const imageFiles = imageFilesList;
+            if (imageFiles && imageFiles.length > 0) {
+                data.images = [];
+                const maxImages = Math.min(imageFiles.length, 5); // تغییر از 2 به 5
+                
+                for (let i = 0; i < maxImages; i++) {
+                    const base64 = await fileToBase64(imageFiles[i]);
+                    data.images.push({
+                        base64: base64,
+                        name: imageFiles[i].name
+                    });
+                }
+            }
+
             console.log('Form data being sent:', data); // برای دیباگ
             return data;
-            }
+        }
+        
 
         function showSuccessPage() {
             // مخفی کردن تمام صفحات
@@ -1883,6 +2051,14 @@
                 field.required = false;
                 field.value = '';
             });
+
+            // Delete Image input 
+            // clear the preview panel
+            document.getElementById('imagePreview').innerHTML = '';
+            // reset the file input
+            document.getElementById('siteImages').value = '';
+            imageFilesList = []; 
+
             
             // نمایش صفحه اصلی
             document.getElementById('loginPage').style.display = 'none';
@@ -1997,6 +2173,14 @@
                                 ❌ انصراف
                             </button>
                         </div>
+                        
+                        <!-- Progress Bar Section -->
+                        <div id="submissionProgressSection" style="display: none; margin-top: 24px;">
+                            <div class="submission-progress">
+                                <div class="submission-progress-fill" id="submissionProgressFill"></div>
+                            </div>
+                            <div class="submission-status" id="submissionStatus">آماده‌سازی اطلاعات...</div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2005,8 +2189,7 @@
             
             // اضافه کردن event listeners
             document.getElementById('confirmSubmit').addEventListener('click', function() {
-                document.body.removeChild(popup);
-                submitFormConfirmed(); // تابع جدید برای ارسال واقعی
+                submitFormConfirmed(); 
             });
             
             document.getElementById('cancelSubmit').addEventListener('click', function() {
@@ -2031,22 +2214,68 @@
             });
         }
 
+        // تابع کنترل Progress Bar
+        function updateSubmissionProgress(percentage, status) {
+            const progressFill = document.getElementById('submissionProgressFill');
+            const statusText = document.getElementById('submissionStatus');
+            
+            if (progressFill) {
+                progressFill.style.width = percentage + '%';
+            }
+            
+            if (statusText) {
+                statusText.textContent = status;
+            }
+        }
+
+        function showSubmissionProgress() {
+            const progressSection = document.getElementById('submissionProgressSection');
+            const buttons = document.querySelectorAll('#confirmationPopup button');
+            
+            if (progressSection) {
+                progressSection.style.display = 'block';
+            }
+            
+            // غیرفعال کردن دکمه‌ها
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            });
+        }
+
         //  تابع submitFormConfirmed
         async function submitFormConfirmed() {
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.classList.add('loading');
 
+            // نمایش Progress Bar
+            showSubmissionProgress();
+
             try {
-                const formData = collectFormData();
-                console.log(formData)
-                // نمایش پیام آماده سازی داده ها
-                showMessage('در حال آماده‌سازی و ارسال اطلاعات...', 'info');
+                // مرحله 1: آماده‌سازی اطلاعات
+                updateSubmissionProgress(10, 'در حال آماده‌سازی اطلاعات...');
+                await new Promise(resolve => setTimeout(resolve, 500));
                 
-                // آدرس Google Apps Script اول (اسکریپت اصلی)
+                const formData = await collectFormData();
+                
+                // مرحله 2: آماده‌سازی تصاویر
+                if (formData.images && formData.images.length > 0) {
+                    updateSubmissionProgress(30, `در حال آماده‌سازی ${formData.images.length} تصویر...`);
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                } else {
+                    updateSubmissionProgress(30, 'آماده‌سازی اطلاعات تکمیل شد...');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+                console.log(formData);
+                
+                // مرحله 3: ارسال به سرور اصلی
+                updateSubmissionProgress(50, 'در حال ارسال به سرور اصلی...');
+                
                 const scriptUrl = 'https://script.google.com/macros/s/AKfycbwPANLE4fPhIHJstXBehwR8Rd3B2trbcLflh2An59ce_oYOybrf2TtgU_bH7hSbQ2saQw/exec';
                 
-                // ارسال به اسکریپت اول (منتظر پاسخ می‌مانیم)
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
                     headers: {
@@ -2054,12 +2283,30 @@
                     },
                     body: JSON.stringify(formData)
                 });
-                console.log(response)
-                // نمایش صفحه موفقیت
+                
+                console.log(response);
+                
+                // مرحله 4: تایید ارسال
+                updateSubmissionProgress(80, 'تایید دریافت از سرور...');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // مرحله 5: تکمیل ارسال اصلی
+                updateSubmissionProgress(100, 'ارسال با موفقیت تکمیل شد! ✅');
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // بستن popup و نمایش صفحه موفقیت
+                const popup = document.getElementById('confirmationPopup');
+                if (popup) {
+                    document.body.removeChild(popup);
+                }
+                
+                // نمایش صفحه موفقیت فوری
                 showSuccessPage();
                 
-                // فراخوانی آسنکرون اسکریپت دوم در پس‌زمینه
+                // ارسال آسنکرون به سرور پشتیبان (در پس‌زمینه)
                 const secondScriptUrl = 'https://script.google.com/macros/s/AKfycbzexq1tJKswfA6qgF_A6ABvKPGsIvbINNxe_rxGkud3fbpypcZ2PdIG4wbXF6Jw6-hy/exec';
+                
+                // ارسال غیرهمزمان - کاربر منتظر نمی‌ماند
                 fetch(secondScriptUrl, {
                     method: 'POST',
                     headers: {
@@ -2067,21 +2314,31 @@
                     },
                     body: JSON.stringify(formData)
                 }).then(response => {
-                    console.log('Second script called successfully');
+                    console.log('Second script called successfully in background');
                 }).catch(error => {
-                    console.error('Error calling second script:', error);
+                    console.error('Error calling second script (background):', error);
+                    // خطا در سرور دوم، اما کاربر را آگاه نمی‌کنیم چون در پس‌زمینه است
                 });
 
             } catch (error) {
                 console.error('Error:', error);
-                // حتی در صورت خطا، ممکن است داده ها ارسال شده باشند
-                showMessage('ارسال اطلاعات با مشکل مواجه شد! لطفا دورباره تلاش کنید و به تیم گزارش دهید.', 'info');
+                
+                updateSubmissionProgress(100, 'خطا در ارسال! اما احتمالاً داده‌ها ذخیره شده‌اند. ❌');
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // بستن popup در صورت خطا
+                const popup = document.getElementById('confirmationPopup');
+                if (popup) {
+                    document.body.removeChild(popup);
+                }
+                
+                showMessage('گزارش احتمالاً ارسال شده است. در صورت عدم اطمینان، لطفاً Google Sheet خود را بررسی کنید.', 'info');
+                
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('loading');
             }
         }
-
         // تابع submitForm جدید که popup را نمایش می‌دهد
         function submitForm() {
             // اعتبارسنجی نهایی
@@ -2184,6 +2441,338 @@
                 }
             });
         });
+
+        // Add image preview handler for multiple images
+        document.getElementById('siteImages').addEventListener('change', function(e) {
+            const selectedFiles = Array.from(e.target.files);
+            const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 مگابایت به بایت
+            
+            // بررسی حجم فایل‌ها
+            const validFiles = [];
+            const invalidFiles = [];
+            
+            selectedFiles.forEach(file => {
+                if (file.size > MAX_FILE_SIZE) {
+                    invalidFiles.push({
+                        name: file.name,
+                        size: formatFileSize(file.size)
+                    });
+                } else {
+                    validFiles.push(file);
+                }
+            });
+            
+            // نمایش پاپ‌اپ خطا برای فایل‌های بزرگ
+            if (invalidFiles.length > 0) {
+                showLargeFilePopup(invalidFiles);
+            }
+            
+            // ادامه پردازش با فایل‌های معتبر
+            if (validFiles.length === 0) {
+                // ریست input
+                e.target.value = '';
+                return;
+            }
+            
+            // بررسی حداکثر تعداد مجاز
+            const remainingSlots = 5 - imageFilesList.length;
+            
+            if (validFiles.length > remainingSlots) {
+                showMessage(`شما می‌توانید حداکثر ${remainingSlots} تصویر دیگر اضافه کنید.`, 'error');
+                
+                // اضافه کردن فقط تعداد مجاز از فایل‌های معتبر
+                const filesToAdd = validFiles.slice(0, remainingSlots);
+                imageFilesList.push(...filesToAdd);
+            } else {
+                // اضافه کردن تمام فایل‌های معتبر
+                imageFilesList.push(...validFiles);
+            }
+            
+            previewMultipleImages();
+            
+            // ریست input تا بتونه دوباره همون فایل رو انتخاب کنه
+            e.target.value = '';
+            
+            // نمایش پیام تایید برای فایل‌های معتبر
+            if (validFiles.length > 0) {
+                const addedCount = Math.min(validFiles.length, remainingSlots);
+                showMessage(`✅ ${addedCount} تصویر با موفقیت اضافه شد.`, 'success');
+            }
+        });
+        function removeImageAt(index) {
+            imageFilesList.splice(index, 1);
+            previewMultipleImages();
+            
+            // نمایش پیام تایید حذف
+            showMessage('تصویر با موفقیت حذف شد.', 'info');
+        }
+
+        // تابع کمکی برای تبدیل بایت به فرمت قابل خواندن
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }   
+
+        // تابع نمایش پاپ‌اپ برای فایل‌های بزرگ
+        function showLargeFilePopup(invalidFiles) {
+            const popup = document.createElement('div');
+            popup.id = 'largeFilePopup';
+            
+            const filesList = invalidFiles.map(file => 
+                `<li style="margin: 8px 0; padding: 8px; background: #fef2f2; border-radius: 6px; border-left: 3px solid #ef4444;">
+                    <strong>${file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name}</strong>
+                    <br><small style="color: #991b1b;">حجم: ${file.size}</small>
+                </li>`
+            ).join('');
+            
+            popup.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.6);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                    backdrop-filter: blur(5px);
+                ">
+                    <div style="
+                        background: white;
+                        border-radius: 12px;
+                        padding: 32px;
+                        max-width: 500px;
+                        width: 90%;
+                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                        text-align: center;
+                        font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+                        max-height: 80vh;
+                        overflow-y: auto;
+                    ">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">⚠️</div>
+                        <h3 style="color: #dc2626; margin-bottom: 16px; font-size: 1.25rem;">حجم فایل بیش از حد مجاز</h3>
+                        
+                        <p style="color: #374151; margin-bottom: 20px; line-height: 1.6;">
+                            تصاویر زیر بیشتر از ۵ مگابایت هستند و نمی‌توانند آپلود شوند:
+                        </p>
+                        
+                        <ul style="
+                            list-style: none;
+                            padding: 0;
+                            margin: 20px 0;
+                            text-align: right;
+                            max-height: 200px;
+                            overflow-y: auto;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 8px;
+                            padding: 12px;
+                        ">
+                            ${filesList}
+                        </ul>
+                        
+                        <div style="
+                            background: #eff6ff;
+                            border: 1px solid #bfdbfe;
+                            border-radius: 8px;
+                            padding: 16px;
+                            margin: 20px 0;
+                            text-align: right;
+                        ">
+                            <p style="color: #1e40af; margin: 0; font-size: 0.875rem; line-height: 1.5;">
+                                💡 <strong>راه حل:</strong><br>
+                                • تصاویر را فشرده کنید یا در اندازه کوچک‌تر ذخیره کنید<br>
+                                • یا این تصاویر را در <strong>ایتا</strong> ارسال بفرمایید
+                            </p>
+                        </div>
+                        
+                        <button id="closeLargeFilePopup" style="
+                            background: #dc2626;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            padding: 12px 24px;
+                            font-size: 0.875rem;
+                            cursor: pointer;
+                            font-weight: 500;
+                            transition: background-color 0.2s ease;
+                            margin-top: 16px;
+                        ">
+                            متوجه شدم
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // اضافه کردن event listener برای بستن پاپ‌اپ
+            document.getElementById('closeLargeFilePopup').addEventListener('click', function() {
+                document.body.removeChild(popup);
+            });
+            
+            // بستن پاپ‌اپ با کلیک روی background
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) {
+                    document.body.removeChild(popup);
+                }
+            });
+            
+            // بستن پاپ‌اپ با کلید Escape
+            document.addEventListener('keydown', function escapeHandler(e) {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('largeFilePopup')) {
+                        document.body.removeChild(popup);
+                    }
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            });
+        }
+
+        function previewMultipleImages() {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+
+            imageFilesList.slice(0, 5).forEach((file, i) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'img-container';
+                    imgContainer.style.cssText = `
+                        position: relative;
+                        width: 100%;
+                        height: 150px;
+                        overflow: hidden;
+                        border-radius: 8px;
+                        border: 1px solid #e2e8f0;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        transition: transform 0.2s ease;
+                    `;
+                    
+                    // افکت hover
+                    imgContainer.addEventListener('mouseenter', () => {
+                        imgContainer.style.transform = 'scale(1.02)';
+                    });
+                    imgContainer.addEventListener('mouseleave', () => {
+                        imgContainer.style.transform = 'scale(1)';
+                    });
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = `
+                        width: 100%;
+                        height: 150px;
+                        object-fit: cover;
+                    `;
+                    imgContainer.appendChild(img);
+
+                    // شماره تصویر
+                    const imageNumber = document.createElement('div');
+                    imageNumber.textContent = i + 1;
+                    imageNumber.style.cssText = `
+                        position: absolute;
+                        top: 4px;
+                        left: 4px;
+                        background: rgba(0,0,0,0.7);
+                        color: white;
+                        border-radius: 50%;
+                        width: 24px;
+                        height: 24px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 12px;
+                        font-weight: bold;
+                    `;
+                    imgContainer.appendChild(imageNumber);
+
+                    // دکمه حذف
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.textContent = '×';
+                    deleteBtn.style.cssText = `
+                        position: absolute;
+                        top: 4px;
+                        right: 4px;
+                        background: rgba(220, 38, 38, 0.8);
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        width: 24px;
+                        height: 24px;
+                        font-size: 16px;
+                        line-height: 24px;
+                        text-align: center;
+                        cursor: pointer;
+                        font-weight: bold;
+                        transition: background-color 0.2s ease;
+                    `;
+                    
+                    deleteBtn.addEventListener('mouseenter', () => {
+                        deleteBtn.style.background = 'rgba(220, 38, 38, 1)';
+                    });
+                    deleteBtn.addEventListener('mouseleave', () => {
+                        deleteBtn.style.background = 'rgba(220, 38, 38, 0.8)';
+                    });
+                    
+                    deleteBtn.addEventListener('click', () => removeImageAt(i));
+                    imgContainer.appendChild(deleteBtn);
+
+                    // نام فایل و حجم
+                    const fileInfo = document.createElement('div');
+                    const fileName = file.name.length > 12 ? file.name.substring(0, 12) + '...' : file.name;
+                    const fileSize = formatFileSize(file.size);
+                    fileInfo.innerHTML = `${fileName}<br><small>${fileSize}</small>`;
+                    fileInfo.style.cssText = `
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        background: rgba(0,0,0,0.8);
+                        color: white;
+                        padding: 6px 8px;
+                        font-size: 10px;
+                        text-align: center;
+                        line-height: 1.2;
+                    `;
+                    imgContainer.appendChild(fileInfo);
+
+                    preview.appendChild(imgContainer);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // نمایش اطلاعات تعداد تصاویر
+            if (imageFilesList.length > 0) {
+                const infoDiv = document.createElement('div');
+                infoDiv.style.cssText = `
+                    grid-column: 1 / -1;
+                    text-align: center;
+                    padding: 12px;
+                    background: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    color: #374151;
+                    font-size: 0.875rem;
+                `;
+                
+                const remaining = 5 - imageFilesList.length;
+                infoDiv.innerHTML = `
+                    📊 ${imageFilesList.length} از ۵ تصویر انتخاب شده
+                    ${remaining > 0 ? `<br>می‌توانید ${remaining} تصویر دیگر اضافه کنید` : '<br>حداکثر تعداد تصویر انتخاب شده'}
+                `;
+                
+                preview.appendChild(infoDiv);
+            }
+
+            if (imageFilesList.length > 5) {
+                showMessage('فقط ۵ تصویر اول آپلود خواهند شد', 'info');
+            }
+        }
     </script>
 </body>
 </html>
