@@ -1057,11 +1057,11 @@
                         <h3>سیمان</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>مقدار وارده (کیلوگرم):</label>
+                                <label>مقدار وارده (پاکت):</label>
                                 <input type="number" name="cement_received" min="0" step="100">
                             </div>
                             <div class="form-group">
-                                <label>مقدار مصرفی (کیلوگرم):</label>
+                                <label>مقدار مصرفی (پاکت):</label>
                                 <input type="number" name="cement_consumed" min="0" step="100">
                             </div>
                         </div>
@@ -1071,11 +1071,11 @@
                         <h3>ماسه</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>مقدار وارده (کیلوگرم):</label>
+                                <label>مقدار وارده (تن):</label>
                                 <input type="number" name="sand_received" min="0" step="100">
                             </div>
                             <div class="form-group">
-                                <label>مقدار مصرفی (کیلوگرم):</label>
+                                <label>مقدار مصرفی (تن):</label>
                                 <input type="number" name="sand_consumed" min="0" step="100">
                             </div>
                         </div>
@@ -1113,11 +1113,11 @@
                         <h3>میلگرد ۶</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>مقدار وارده (کیلوگرم):</label>
+                                <label>مقدار وارده (تن):</label>
                                 <input type="number" name="rebar6_received" min="0" step="100">
                             </div>
                             <div class="form-group">
-                                <label>مقدار مصرفی (کیلوگرم):</label>
+                                <label>مقدار مصرفی (تن):</label>
                                 <input type="number" name="rebar6_consumed" min="0" step="100">
                             </div>
                         </div>
@@ -1127,11 +1127,11 @@
                         <h3>میلگرد ۸</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>مقدار وارده (کیلوگرم):</label>
+                                <label>مقدار وارده (تن):</label>
                                 <input type="number" name="rebar8_received" min="0" step="100">
                             </div>
                             <div class="form-group">
-                                <label>مقدار مصرفی (کیلوگرم):</label>
+                                <label>مقدار مصرفی (تن):</label>
                                 <input type="number" name="rebar8_consumed" min="0" step="100">
                             </div>
                         </div>
@@ -1271,7 +1271,7 @@
                         </div>
                         
                         <div class="checkbox-item">
-                            <label>نصب توری، سیم خاردار و راد</label>
+                            <label>نصب توری</label>
                             <input type="checkbox" name="fence_mesh" onchange="toggleSubInputs(this, 'fence_mesh_inputs')">
                         </div>
                         <div class="sub-inputs" id="fence_mesh_inputs">
@@ -1282,6 +1282,33 @@
                         <div class="description-field" id="fence_mesh_desc">
                             <textarea name="fence_mesh_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
                         </div>
+
+                        <div class="checkbox-item">
+                            <label>نصب سیم خاردار</label>
+                            <input type="checkbox" name="fence_barbed" onchange="toggleSubInputs(this, 'fence_barbed_inputs')">
+                        </div>
+                        <div class="sub-inputs" id="fence_barbed_inputs">
+                            <input type="text" name="fence_barbed_unit" placeholder="واحد">
+                            <input type="number" name="fence_barbed_total" placeholder="حجم کل" min="0">
+                            <input type="number" name="fence_barbed_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="fence_barbed_desc">
+                            <textarea name="fence_barbed_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
+
+                        <div class="checkbox-item">
+                            <label>نصب راد</label>
+                            <input type="checkbox" name="fence_rod" onchange="toggleSubInputs(this, 'fence_rod_inputs')">
+                        </div>
+                        <div class="sub-inputs" id="fence_rod_inputs">
+                            <input type="text" name="fence_rod_unit" placeholder="واحد">
+                            <input type="number" name="fence_rod_total" placeholder="حجم کل" min="0">
+                            <input type="number" name="fence_rod_today" placeholder="حجم امروز" min="0">
+                        </div>
+                        <div class="description-field" id="fence_rod_desc">
+                            <textarea name="fence_rod_description" placeholder="توضیحات تکمیلی در صورت نیاز..."></textarea>
+                        </div>
+
                         
                         <div class="checkbox-item">
                             <label>نصب درب سایت نیروگاه</label>
@@ -1541,7 +1568,7 @@
         let imageFilesList = [];
         // متغیرهای لاگین
         let currentUser = null;
-        const LOGIN_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxa5tHhy-MvIb1IwHmvFuKrn-RG4mfzUzjJQpAICbzZ9_3Ds_MckG8a0uDtonlG7eSJ/exec'; // آیدی اسکریپت لاگین
+        const LOGIN_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwETuCplggh-l7t0o-AZCdYZIdqYtcUBeBGJ95J7z0B7UGIUa7_hntvqYdqaH8laEJ0/exec'; // آیدی اسکریپت لاگین
 
         // تابع لاگین
         async function handleLogin(event) {
@@ -1631,11 +1658,139 @@
                 const supervisorSelect = document.getElementById('supervisorName');
                 supervisorSelect.value = currentUser.name;
                 supervisorSelect.disabled = true;
+                
+                // محدود کردن لیست ساختگاه‌ها بر اساس کاربر
+                updateSiteList();
             }
             
             // بازنشانی به مرحله اول
             currentStep = 1;
             showStep(1);
+        }
+        function updateSiteList() {
+            const siteSelect = document.getElementById('siteName');
+            
+            // تعریف ساختگاه‌ها با کد 5 رقمی
+            const siteCodesMap = {
+                'جاده نفت 1': '10001',
+                'جاده نفت 2': '10002',
+                'جاده نفت 3': '10003',
+                'میگو': '10004',
+                'دوزآلوم 1': '10005',
+                'دوزآلوم 2': '10006',
+                'دوزآلوم 3': '10007',
+                'اگری بوغاز 1': '10008',
+                'اگری بوغاز 2': '10009',
+                'آق قبر': '10010',
+                'آق تقه': '10011',
+                'چناران': '10012',
+                'اسلام آباد': '10013',
+                'آق قمیش': '10014',
+                'یارتی قایه': '10015',
+                'سلطان علی': '10016',
+                'ساری بخش (عطاآباد)': '10017',
+                'یلمه خندان': '10018',
+                'اونق یلقی': '10019',
+                'چن سبلی': '10020',
+                'بهلکه شیخ موسی': '10021',
+                'سلاق غائب': '10022',
+                'ایشانلر': '10023',
+                'کاکا': '10024',
+                'حاجی قره': '10025',
+                'صوفیان': '10026',
+                'گوگجه': '10027',
+                'دهنه': '10028',
+                'شمال انبار الوم-مزرعه نمونه1': '10029',
+                'شمال انبار الوم-مزرعه نمونه2': '10030',
+                'بهار میدان1': '10031',
+                'بهار میدان2': '10032'
+            };
+            
+            // تعریف ساختگاه‌های هر کاربر
+            const userSites = {
+                        'رضا شهمرادی': [
+                            'جاده نفت 1',
+                            'جاده نفت 2', 
+                            'جاده نفت 3',
+                            'اگری بوغاز 1',
+                            'اگری بوغاز 2'
+                        ],
+                        'علی چقری مفرد': [
+                            'میگو',
+                            'آق قبر',
+                        ],
+                        'سیدمرتضی حسینی': [
+                            'جاده نفت 1',
+                            'جاده نفت 2', 
+                            'جاده نفت 3',
+                            'اگری بوغاز 1',
+                            'اگری بوغاز 2',
+                            'میگو',
+                            'آق قبر',
+                        ],
+                        'خانوم تست': [
+                            'جاده نفت 1',
+                            'جاده نفت 2', 
+                            'جاده نفت 3',
+                            'اگری بوغاز 1',
+                            'اگری بوغاز 2',
+                            'میگو',
+                            'آق قبر',
+                        ]
+                    };
+            
+            if (currentUser && currentUser.name && userSites[currentUser.name]) {
+                // پاک کردن گزینه‌های موجود (به جز گزینه پیش‌فرض)
+                siteSelect.innerHTML = '<option value="">انتخاب کنید</option>';
+                
+                // اضافه کردن فقط ساختگاه‌های مربوط به این کاربر
+                userSites[currentUser.name].forEach(site => {
+                    const option = document.createElement('option');
+                    option.value = siteCodesMap[site]; // ارسال کد به جای نام
+                    option.textContent = site; // نمایش نام برای کاربر
+                    option.setAttribute('data-site-name', site); // ذخیره نام برای استفاده داخلی
+                    siteSelect.appendChild(option);
+                });
+            }
+        }
+        // تابع کمکی برای دریافت نام ساختگاه از روی کد
+        function getSiteNameByCode(code) {
+            const codeToNameMap = {
+                '10001': 'جاده نفت 1',
+                '10002': 'جاده نفت 2',
+                '10003': 'جاده نفت 3',
+                '10004': 'میگو',
+                '10005': 'دوزآلوم 1',
+                '10006': 'دوزآلوم 2',
+                '10007': 'دوزآلوم 3',
+                '10008': 'اگری بوغاز 1',
+                '10009': 'اگری بوغاز 2',
+                '10010': 'آق قبر',
+                '10011': 'آق تقه',
+                '10012': 'چناران',
+                '10013': 'اسلام آباد',
+                '10014': 'آق قمیش',
+                '10015': 'یارتی قایه',
+                '10016': 'سلطان علی',
+                '10017': 'ساری بخش (عطاآباد)',
+                '10018': 'یلمه خندان',
+                '10019': 'اونق یلقی',
+                '10020': 'چن سبلی',
+                '10021': 'بهلکه شیخ موسی',
+                '10022': 'سلاق غائب',
+                '10023': 'ایشانلر',
+                '10024': 'کاکا',
+                '10025': 'حاجی قره',
+                '10026': 'صوفیان',
+                '10027': 'گوگجه',
+                '10028': 'دهنه',
+                '10029': 'شمال انبار الوم-مزرعه نمونه1',
+                '10030': 'شمال انبار الوم-مزرعه نمونه2',
+                '10031': 'بهار میدان1',
+                '10032': 'بهار میدان2'
+            };
+            
+            return codeToNameMap[code] || code;
         }
 
         // خروج از سیستم
@@ -1937,13 +2092,20 @@
                 data['supervisorName'] = supervisorSelect.value;
             }
             
-            // اضافه کردن تمام select values به صورت دستی
+            // اضافه کردن تمام select values به صورت دستی (به جز siteName)
             const selects = document.querySelectorAll('select');
             selects.forEach(select => {
-                if (select.name && select.value) {
+                if (select.name && select.value && select.name !== 'siteName') {
                     data[select.name] = select.value;
                 }
             });
+
+            // اضافه کردن کد ساختگاه و نام ساختگاه به صورت جداگانه
+            const siteCodeValue = document.getElementById('siteName').value;
+            if (siteCodeValue) {
+                data['site_code'] = siteCodeValue; // کد 5 رقمی
+                data['site_name'] = getSiteNameByCode(siteCodeValue); // نام فارسی
+            }
             
             // Handle multiple images
             const imageFiles = imageFilesList;
@@ -1975,7 +2137,8 @@
             document.getElementById('successPage').style.display = 'block';
             
             // جمع‌آوری اطلاعات از فرم
-            const siteName = document.getElementById('siteName').value || 'نامشخص';
+            const siteCode = document.getElementById('siteName').value || 'نامشخص';
+            const siteName = getSiteNameByCode(siteCode);
             const reportDate = document.getElementById('reportDate').value || 'نامشخص';
             const supervisorName = document.getElementById('supervisorName').value || 'نامشخص';
             const siteStatus = document.querySelector('input[name="siteStatus"]:checked')?.value || 'نامشخص';
@@ -2070,6 +2233,9 @@
                 const supervisorSelect = document.getElementById('supervisorName');
                 supervisorSelect.value = currentUser.name;
                 supervisorSelect.disabled = true;
+                
+                // به‌روزرسانی لیست ساختگاه‌ها
+                updateSiteList();
             }
             
             // بازنشانی نمایش مراحل
@@ -2091,7 +2257,8 @@
         function showConfirmationPopup() {
             // جمع‌آوری اطلاعات برای نمایش
             const reportDate = document.getElementById('reportDate').value || 'تاریخ وارد نشده';
-            const siteName = document.getElementById('siteName').value || 'نام ساختگاه انتخاب نشده';
+            const siteCode = document.getElementById('siteName').value || 'نامشخص';
+            const siteName = getSiteNameByCode(siteCode);
             
             // ایجاد popup
             const popup = document.createElement('div');
@@ -2272,9 +2439,9 @@
                 console.log(formData);
                 
                 // مرحله 3: ارسال به سرور اصلی
-                updateSubmissionProgress(50, 'در حال ارسال به سرور اصلی...');
+                updateSubmissionProgress(50, 'در حال ارسال به سرور ...');
                 
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbwPANLE4fPhIHJstXBehwR8Rd3B2trbcLflh2An59ce_oYOybrf2TtgU_bH7hSbQ2saQw/exec';
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbzXqtc399DW2M442xYQpe2vUlePOTqGQC_DZv5T6I6mYnmbygTvIIEkH-t3ocMjH5I/exec';
                 
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
@@ -2304,7 +2471,7 @@
                 showSuccessPage();
                 
                 // ارسال آسنکرون به سرور پشتیبان (در پس‌زمینه)
-                const secondScriptUrl = 'https://script.google.com/macros/s/AKfycbzexq1tJKswfA6qgF_A6ABvKPGsIvbINNxe_rxGkud3fbpypcZ2PdIG4wbXF6Jw6-hy/exec';
+                const secondScriptUrl = 'https://script.google.com/macros/s/AKfycbykFrhjO4gXTJXrHya-HNOj50gQ0UplNN4oCyN8U5HospgPx88IC2PBrR1u4vHtpaUr/exec';
                 
                 // ارسال غیرهمزمان - کاربر منتظر نمی‌ماند
                 fetch(secondScriptUrl, {
